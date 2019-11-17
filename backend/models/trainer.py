@@ -1,19 +1,26 @@
-from backend import db
-from backend.helpers.serialization import to_json_trainer
-from backend import bcrypt
-from sqlalchemy.dialects.postgresql import UUID
 
-trainer_certification_association = db.Table('association',
+from backend.helpers.serialization import to_json_trainer
+
+from backend.models.conversation import Conversation
+from backend import bcrypt
+from backend import db
+
+trainer_certification_association = db.Table('association_certification',
                                              db.Column('trainer_id', db.Integer,
                                                        db.ForeignKey('certification.certification_id')),
                                              db.Column('certification_id', db.Integer,
-                                                       db.ForeignKey('trainer.trainer_id'))
-                                             )
+                                                       db.ForeignKey('trainer.trainer_id')))
+
+trainer_conversation_association = db.Table('trainer_association_conversation',
+                                            db.Column('trainer_id', db.Integer,
+                                                      db.ForeignKey('conversation.conversation_id')),
+                                            db.Column('conversation_id', db.Integer,
+                                                      db.ForeignKey('trainer.trainer_id')))
 
 
 class Trainer(db.Model):
     trainer_id = db.Column(db.Integer, primary_key=True)
-    uuid = db.Column(db.String(120), unique=True, nullable=False)
+    trainer_uuid = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(40), unique=True, nullable=False)
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
@@ -22,6 +29,8 @@ class Trainer(db.Model):
     rating = db.Column(db.Integer, default=0)
     certifications = db.relationship('Certification', secondary=trainer_certification_association,
                                      backref=db.backref('trainers', lazy='dynamic'))
+    conversations = db.relationship("Conversation", secondary=trainer_conversation_association,
+                                    backref=db.backref('trainers', lazy='dynamic'))
 
     def save_to_db(self):
         db.session.add(self)
@@ -45,31 +54,6 @@ class Trainer(db.Model):
         return cls.query.filter_by(email=email).first()
 
     @classmethod
-    def find_by_uuid(cls, uuid):
-        return cls.query.filter_by(uuid=uuid).first()
+    def find_by_uuid(cls, trainer_uuid):
+        return cls.query.filter_by(trainer_uuid=trainer_uuid).first()
 
-
-class Certification(db.Model):
-    certification_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), unique=True)
-    description = db.Column(db.Text)
-    score = db.Column(db.Integer, default=0)
-
-    @classmethod
-    def find_by_name(cls, name):
-        return cls.query.filter_by(name=name).first()
-
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-"""
-class Certification(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, unique=True, nullable=False)
-    score = db.Column(db.Integer, default=0)
-    verified = db.Column(db.Boolean, default=False),
-    trainers = db.relationship("Trainer",
-                               secondary="association_table",
-                               back_populates="certification")
-"""

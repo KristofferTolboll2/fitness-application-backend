@@ -1,12 +1,15 @@
+import werkzeug
 from flask_restful import Resource, reqparse, inputs
 from backend.models.trainer import Trainer
-from backend.models.trainer import Certification
+from backend.models.certification import Certification
 from backend.models.revokedtoken import RevokedToken
 from backend import bcrypt
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required,
                                 get_jwt_identity, get_raw_jwt, get_jwt_claims)
 from backend.helpers.serialization import to_json_trainer
+from backend.models.conversation import Conversation
 import uuid
+
 trainer_registration_parser = reqparse.RequestParser()
 trainer_registration_parser.add_argument('email',
                                          type=inputs.regex('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'),
@@ -33,6 +36,12 @@ trainer_update_parser.add_argument('certifications', help="Ceritifications")
 trainer_by_id_parser = reqparse.RequestParser()
 trainer_by_id_parser.add_argument('id', type=str, help="ID on the trainer you want to fetch", required=True)
 
+
+trainer_send_message_parser = reqparse.RequestParser()
+trainer_send_message_parser.add_argument('trainer_id', type=str, help="must provide valid trainer_id")
+trainer_send_message_parser.add_argument('user_id', type=str, help="must provide valid user_id")
+trainer_send_message_parser.add_argument('content', type=str, help="must provide content")
+trainer_send_message_parser.add_argument('attachments', type=werkzeug.datastructures.FileStorage, required=False)
 
 class VerifyAndGetTrainer(Resource):
     @jwt_required
@@ -72,7 +81,7 @@ class TrainerRegistration(Resource):
             password=hashed_password,
             first_name=data['first_name'],
             last_name=data['last_name'],
-            uuid=trainer_uuid,
+            trainer_uuid=trainer_uuid,
             certifications=trainer_certifications
         )
         try:
@@ -115,7 +124,7 @@ class TrainerLogin(Resource):
                     'access_token': access_token,
                     'refresh_token': refresh_token,
                     'id': current_trainer.trainer_id,
-                    'traner': to_json_trainer(current_trainer)
+                    'trainer': to_json_trainer(current_trainer)
                     }
         else:
             # create log for wrong credentials
@@ -144,8 +153,15 @@ class TokenRefresh(Resource):
         return {'access_token': access_token}
 
 
-class GetTrainerById(Resource):
-    pass
+#class TrainerSendMessage(Resource):
+#    @jwt_required
+#    def post(self):
+#        data = trainer_send_message_parser.parse_args()
+#        existing_conversation = Conversation.does_exist(data['trainer_uuid'], data['user_uuid'])
+#        if existing_conversation:
+#            existing_conversation.
+#class GetTrainerById(Resource):
+#    pass
 
 
 class UserLogin(Resource):

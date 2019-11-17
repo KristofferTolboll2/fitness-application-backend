@@ -6,4 +6,5 @@ def on_connect():
 
 @socket.on('send_message')
 def on_send_message(data):
+    print("Message received")
     print(f'data received was {data}')

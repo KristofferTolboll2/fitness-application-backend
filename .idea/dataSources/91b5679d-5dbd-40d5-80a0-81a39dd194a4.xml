@@ -3,20 +3,22 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.16">
     <root id="1">
       <ServerVersion>10.10</ServerVersion>
-      <StartupTime>1572945977</StartupTime>
+      <StartupTime>1573207361</StartupTime>
     </root>
     <database id="2" parent="1" name="fitness_application">
       <ObjectId>16385</ObjectId>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>589</IntrospectionStateNumber>
-      <Relations>sequence|table|16386|16388|1
+      <IntrospectionStateNumber>1465</IntrospectionStateNumber>
+      <Relations>sequence|table|19845|19847|1
+sequence|table|19853|19855|1
+sequence|table|19868|19870|1
 </Relations>
     </database>
     <database id="3" parent="1" name="postgres">
       <ObjectId>13055</ObjectId>
       <Comment>default administrative connection database</Comment>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>586</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1466</IntrospectionStateNumber>
       <Current>1</Current>
     </database>
     <role id="4" parent="1" name="kristoffer">
@@ -137,7 +139,7 @@
       <Comment>standard public schema</Comment>
       <StateNumber>351</StateNumber>
       <Owner>postgres</Owner>
-      <IntrospectionStateNumber>587</IntrospectionStateNumber>
+      <IntrospectionStateNumber>1467</IntrospectionStateNumber>
       <Current>1</Current>
     </schema>
     <access-method id="24" parent="3" name="btree">

@@ -1,7 +1,7 @@
 def to_json_trainer(x):
     certifications = [to_json_certificate(certificate) for certificate in x.certifications]
     return {
-        'id': str(x.uuid),
+        'id': str(x.trainer_uuid),
         'email': x.email,
         'first_name': x.first_name,
         'last_name': x.last_name,
